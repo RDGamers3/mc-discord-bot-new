@@ -25,6 +25,7 @@ const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
 const CHANNEL_ID = process.env.CHANNEL_ID;
+const ROLE_ID = process.env.ROLE_ID;
 
 const HOST = 'debt-astrology.gl.joinmc.link';
 const PORT = 25565;
@@ -71,12 +72,12 @@ async function checkServer() {
 function createEmbed(status) {
     if (status.online) {
         return new EmbedBuilder()
-            .setTitle('🟢 Server ONLINE')
+            .setTitle('🟢 Server Online! So get yo ahhh on mc rn')
             .setColor(0x00ff00)
             .setDescription(`Players: ${status.players}/${status.max}`);
     } else {
         return new EmbedBuilder()
-            .setTitle('🔴 Server OFFLINE')
+            .setTitle('🔴 Danic doesn't know how to keep a server up so server is Offline.')
             .setColor(0xff0000)
             .setDescription('Server is currently down');
     }
@@ -94,15 +95,35 @@ client.once('ready', async () => {
 
     statusMessageId = msg.id;
 
-    setInterval(async () => {
-        const status = await checkServer();
-        const embed = createEmbed(status);
+    let lastStatus = null;
 
-        const message = await channel.messages.fetch(statusMessageId);
-        message.edit({ embeds: [embed] });
+setInterval(async () => {
+    const status = await checkServer();
+    const embed = createEmbed(status);
 
-    }, 30000);
-});
+    const message = await client.channels.fetch(CHANNEL_ID)
+        .then(channel => channel.messages.fetch(statusMessageId));
+
+    // update the main status message
+    message.edit({ embeds: [embed] });
+
+    // detect change
+    if (lastStatus === null) {
+        lastStatus = status.online;
+        return;
+    }
+
+    if (!lastStatus && status.online) {
+        // OFF -> ON
+        const channel = await client.channels.fetch(CHANNEL_ID);
+        channel.send({
+            content: `<@&${ROLE_ID}> 🟢 Chat the server is Online! Get yo ahh on mc`,
+        });
+    }
+
+    lastStatus = status.online;
+
+}, 30000);
 
 // ===== Slash command =====
 client.on('interactionCreate', async interaction => {

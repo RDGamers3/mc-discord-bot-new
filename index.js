@@ -5,7 +5,8 @@ app.get('/', (req, res) => {
     res.send('Bot is running!');
 });
 
-app.listen(3000, () => {
+// Use Render port
+app.listen(process.env.PORT || 3000, () => {
     console.log('Web server running');
 });
 
@@ -97,33 +98,34 @@ client.once('ready', async () => {
 
     let lastStatus = null;
 
-setInterval(async () => {
-    const status = await checkServer();
-    const embed = createEmbed(status);
+    setInterval(async () => {
+        const status = await checkServer();
+        const embed = createEmbed(status);
 
-    const message = await client.channels.fetch(CHANNEL_ID)
-        .then(channel => channel.messages.fetch(statusMessageId));
+        const message = await client.channels.fetch(CHANNEL_ID)
+            .then(channel => channel.messages.fetch(statusMessageId));
 
-    // update the main status message
-    message.edit({ embeds: [embed] });
+        // update the main status message
+        message.edit({ embeds: [embed] });
 
-    // detect change
-    if (lastStatus === null) {
+        // detect change
+        if (lastStatus === null) {
+            lastStatus = status.online;
+            return;
+        }
+
+        if (!lastStatus && status.online) {
+            // OFF -> ON
+            const channel = await client.channels.fetch(CHANNEL_ID);
+            channel.send({
+                content: `<@&${ROLE_ID}> 🟢 Chat the server is Online! Get yo ahh on mc`,
+            });
+        }
+
         lastStatus = status.online;
-        return;
-    }
 
-    if (!lastStatus && status.online) {
-        // OFF -> ON
-        const channel = await client.channels.fetch(CHANNEL_ID);
-        channel.send({
-            content: `<@&${ROLE_ID}> 🟢 Chat the server is Online! Get yo ahh on mc`,
-        });
-    }
-
-    lastStatus = status.online;
-
-}, 30000);
+    }, 30000); // <- This closing parenthesis and brace was missing/causing the error
+});
 
 // ===== Slash command =====
 client.on('interactionCreate', async interaction => {

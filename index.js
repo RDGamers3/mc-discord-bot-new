@@ -78,7 +78,7 @@ function createEmbed(status) {
             .setDescription(`Players: ${status.players}/${status.max}`);
     } else {
         return new EmbedBuilder()
-            .setTitle('🔴 Danic does not know how to keep a server up so server is Offline.')
+            .setTitle('🔴 Sorry, we are experiencing some issues rn and server is down.')
             .setColor(0xff0000)
             .setDescription('Server is currently down');
     }

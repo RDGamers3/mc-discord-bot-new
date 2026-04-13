@@ -28,7 +28,7 @@ const GUILD_ID = process.env.GUILD_ID;
 const CHANNEL_ID = process.env.CHANNEL_ID;
 const ROLE_ID = process.env.ROLE_ID;
 
-const HOST = 'debt-astrology.gl.joinmc.link';
+const HOST = 'winking-tiles.gl.joinmc.link';
 const PORT = 25565;
 // ==================
 

@@ -90,6 +90,8 @@ client.once('ready', async () => {
 
     const channel = await client.channels.fetch(CHANNEL_ID);
 
+statusMessageId = null;
+    
     const msg = await channel.send({
         embeds: [new EmbedBuilder().setTitle('Starting...')]
     });

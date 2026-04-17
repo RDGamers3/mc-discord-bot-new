@@ -116,14 +116,7 @@ statusMessageId = null;
             return;
         }
 
-        if (!lastStatus && status.online) {
-            // OFF -> ON
-            const channel = await client.channels.fetch(CHANNEL_ID);
-            channel.send({
-                content: `<@&${ROLE_ID}> 🟢 Chat the server is Online! Get yo ahh on mc`,
-            });
-        }
-
+        
         lastStatus = status.online;
 
     }, 30000); // <- This closing parenthesis and brace was missing/causing the error
